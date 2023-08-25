@@ -23,6 +23,10 @@ A decentralized cross-chain credit bureau designed to allow whitelisted protocol
 - View credit summaries using the `viewCreditSummary` function.
 - To make cross-chain calls, use helper contract's `submitCreditReport` method and ensure Axelar data like destination chain and address are correct.
 
+## Examples 📝
+- `Union Protocol`: an implementation on how Union Protocol can use the credit bureau to report their borrowers' performance across multiple chains.
+In this example, we have overridden the *UserManager* contract embedding the credit bureau's interface and aggregating user performance data. This allows us to use the credit bureau as a standalone contract and also as a module in other contracts.
+
 ## Contributing 🤝
 We welcome contributions from the community! This is a public goods project made for the whole web3 community to expand and implement. Contrarily to tradfi credit bureau that are private, centralised and pay-per-view, we are aiming at a collaborative apporach able to create a stronger, more fair and transparent ecosystem.
 

@@ -1,5 +1,5 @@
 const { assert } = require("chai");
-const { ethers, BigNumber } = require("hardhat");
+const { ethers, BigNumber, parseEther } = require("hardhat");
 const {
   createNetwork,
   relay,
@@ -14,17 +14,19 @@ describe("Unit tests", function () {
     // Initialize an Ethereum network
     eth = await createNetwork({ name: "Ethereum" });
 
+    // Deploy the credit bureau contract on Ethereum
     creditBureau = await ethers.deployContract("CreditBureau", [
       eth.gateway.address,
-      eth.gateway.address,
+      eth.gasService.address,
     ]);
 
     // Initialize an Avalanche network
     avalanche = await createNetwork({name: "Avalanche"});
 
+    // Deploy the satellite bureau contract on Avalanche
     satelliteCreditBureau = await ethers.deployContract(
       "SatelliteCreditBureau",
-      [eth.gateway.address, eth.gateway.address],
+      [avalanche.gateway.address, avalanche.gasService.address],
     );
   });
 
@@ -43,15 +45,13 @@ describe("Unit tests", function () {
     runAsserts(report, reportData, reporter.address);
   });
 
-  it("Submit remote credit report", async function () {
+  it("Submit cross-chain credit report", async function () {
     const [deployer, user, reporter] = await ethers.getSigners();
     await creditBureau.toggleWhitelist(reporter.address);
 
-    // Send the report
     const reportData = createReport(reporter);
-    //await satelliteCreditBureau.submitCreditReport("Ethereum", creditBureau.address, reportData, user.address);
+    await satelliteCreditBureau.submitCreditReport("Ethereum", creditBureau.address, reportData, user.address, {value: ethers.parseEther("0.1")});
 
-    // perform some basic checks
     const report = await creditBureau.creditHistory(user.address, 0);
     runAsserts(report, reportData, reporter.address);
   });
